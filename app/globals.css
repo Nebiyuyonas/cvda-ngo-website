@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+@theme {
+  --color-green: #1F4D45;
+  --color-green-dark: #163830;
+  --color-green-tint: #E6EEEB;
+  --color-ochre: #E0A030;
+  --color-ochre-dark: #C98A1B;
+  --color-paper: #FAF8F4;
+  --color-ink: #1B1F1D;
+
+  --font-heading: var(--font-young-serif), Georgia, serif;
+  --font-body: var(--font-atkinson), system-ui, sans-serif;
+}
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-atkinson);
+    font-size: 1.125rem; /* text-lg */
+    line-height: 1.625;  /* leading-relaxed */
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-young-serif);
+    color: var(--color-green);
+    line-height: 1.2;
+  }
+
+  h1 { font-size: 2.25rem; }
+  @media (min-width: 640px) { h1 { font-size: 3rem; } }
+  @media (min-width: 1024px) { h1 { font-size: 3.75rem; } }
+  
+  h2 { font-size: 1.875rem; }
+  @media (min-width: 640px) { h2 { font-size: 2.25rem; } }
+  
+  h3 { font-size: 1.25rem; }
+  @media (min-width: 640px) { h3 { font-size: 1.5rem; } }
+
+  /* Visible focus for every interactive element */
+  :focus-visible {
+    outline: 3px solid #1B1F1D;
+    outline-offset: 3px;
+    box-shadow: 0 0 0 6px #E0A030;
+  }
+  :target, :focus { scroll-margin-top: 6rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

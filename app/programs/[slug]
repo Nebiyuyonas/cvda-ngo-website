@@ -1,0 +1,119 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
+import CTAButton from "@/components/CTAButton";
+import { getProject } from "@/lib/projects";
+
+export default async function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
+  // 1. Await the params (Next.js 15+ requirement)
+  const { slug } = await params;
+  
+  // 2. Try to find the project
+  const project = getProject(slug);
+
+  // 3. If it fails, show a debug message instead of a 404
+  if (!project) {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center p-10 text-center">
+        <h1 className="text-4xl text-red-600 mb-4">Project Not Found</h1>
+        <p className="text-xl mb-4">We received the slug: <strong>"{slug}"</strong></p>
+        <p className="max-w-md">Check your <code>lib/projects.ts</code> file. Make sure the slug is spelled exactly like this.</p>
+        <Link href="/programs" className="mt-8 text-green underline">Back to Programs</Link>
+      </div>
+    );
+  }
+
+  // 4. If it succeeds, show the page
+  const details = [
+    { label: "Donor", value: project.donor },
+    { label: "Timeline", value: project.timeline },
+    { label: "Location", value: project.location },
+  ];
+
+  return (
+    <>
+      <section aria-labelledby="project-heading" className="bg-green">
+        <div className="mx-auto max-w-6xl px-5 py-16 sm:py-24">
+          <Link
+            href="/programs"
+            className="inline-flex items-center gap-2 font-bold text-paper underline underline-offset-4"
+          >
+            <ArrowLeft aria-hidden="true" className="h-5 w-5" />
+            All programs
+          </Link>
+          <h1 id="project-heading" className="mt-6 max-w-3xl text-paper">
+            {project.name}
+          </h1>
+          <p className="mt-4 max-w-prose text-xl text-paper">{project.tagline}</p>
+        </div>
+      </section>
+
+      <section aria-labelledby="about-project-heading" className="mx-auto max-w-6xl px-5 py-20">
+        <div className="grid gap-12 lg:grid-cols-2 items-center">
+          <div>
+            <h2 id="about-project-heading">About this project</h2>
+            <div className="mt-6 max-w-prose space-y-4">
+              {project.summary.map((p) => (
+                <p key={p}>{p}</p>
+              ))}
+            </div>
+          </div>
+          <div className="relative aspect-[4/3] w-full overflow-hidden rounded-md bg-green-tint">
+            {project.image ? (
+              <img
+                src={project.image}
+                alt={`Fieldwork for ${project.name}`}
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center text-green/30 font-heading text-3xl">
+                {project.name}
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="details-heading" className="bg-green-tint">
+        <div className="mx-auto max-w-6xl px-5 py-16">
+          <h2 id="details-heading">Project details</h2>
+          <dl className="mt-8 grid gap-6 md:grid-cols-3">
+            {details.map((d) => (
+              <div key={d.label} className="rounded-md border-l-4 border-ochre bg-paper p-6">
+                <dt className="font-bold">{d.label}</dt>
+                <dd className="mt-1 font-heading text-2xl text-green">{d.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
+
+      {project.stats.length > 0 && (
+        <section aria-labelledby="results-heading" className="mx-auto max-w-6xl px-5 py-16">
+          <h2 id="results-heading">Results</h2>
+          <dl className="mt-10 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
+            {project.stats.map((s) => (
+              <div key={s.label} className="flex flex-col-reverse border-l-4 border-ochre pl-4">
+                <dd className="font-heading text-4xl text-green sm:text-5xl">{s.value}</dd>
+                <dt className="mt-1 text-base">{s.label}</dt>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )}
+
+      <section aria-labelledby="cta-heading" className="bg-green">
+        <div className="mx-auto max-w-6xl px-5 py-16">
+          <h2 id="cta-heading" className="text-paper">Support this work</h2>
+          <p className="mt-4 max-w-prose text-paper">
+            Find out how to donate, partner, or volunteer with CVDA.
+          </p>
+          <div className="mt-8 flex flex-col gap-4 sm:flex-row">
+            <CTAButton href="/get-involved">Get involved</CTAButton>
+            <CTAButton href="/programs" variant="outline-light">See all programs</CTAButton>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
